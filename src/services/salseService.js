@@ -57,7 +57,7 @@ const AvgPriceService = async (req) => {
 
 const RevnueByMonthService = async (req) => {
     try{
-        return {status: "success", data: "RevnueByMonthService"}
+        return {status: "success", data: "RevnueByMonthServicessss"}
     }catch(e){
         return {status: "fail", msg: e}
     }
