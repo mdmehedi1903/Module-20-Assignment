@@ -57,7 +57,7 @@ mongoose
 
 
 // Routing Implement
-app.use("/api/v1", router)
+app.use("/api/salse", router)
 
 // Undefined Route Implement
 app.use('*', (req,res)=>{
