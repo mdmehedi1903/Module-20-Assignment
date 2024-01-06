@@ -30,7 +30,18 @@ const CalculateTotalService = async (req) => {
 
 const QuantityByProductService = async (req) => {
     try{
-        return {status: "success", data: "QuantityByProductService"}
+        const QuantityStage = {
+          $group: {
+            _id: '$product',
+            totalQuantitySold: { $sum: '$quantity' },
+          }
+        }
+
+      let result = await SalseSchema.aggregate([
+        QuantityStage
+      ])
+
+        return {status: "success", data: result}
     }catch(e){
         return {status: "fail", msg: e}
     }
@@ -39,7 +50,30 @@ const QuantityByProductService = async (req) => {
 
 const TopProductsService = async (req) => {
     try{
-        return {status: "success", data: "TopProductsService"}
+
+     const totalRevenueStage = {
+        $group: {
+          _id: '$product',
+          totalRevenue: { $sum: { $multiply: ['$quantity', '$price'] } },
+        },
+      }
+      const sortStage = {
+        $sort: {
+          totalRevenue: -1,
+        },
+      }
+
+      const limitStage = {
+        $limit: 5,
+      }
+
+      let result = await SalseSchema.aggregate([
+        totalRevenueStage,
+        sortStage,
+        limitStage
+      ])
+
+        return {status: "success", data: result}
     }catch(e){
         return {status: "fail", msg: e}
     }
@@ -48,7 +82,18 @@ const TopProductsService = async (req) => {
 
 const AvgPriceService = async (req) => {
     try{
-        return {status: "success", data: "AvgPriceService"}
+      const avgStage = {
+        $group: {
+          _id: null,
+          averagePrice: { $avg: '$price' },
+        },
+      }
+
+      let result = await SalseSchema.aggregate([
+        avgStage
+      ])
+
+        return {status: "success", data: result}
     }catch(e){
         return {status: "fail", msg: e}
     }
@@ -57,7 +102,29 @@ const AvgPriceService = async (req) => {
 
 const RevnueByMonthService = async (req) => {
     try{
-        return {status: "success", data: "RevnueByMonthServicessss"}
+      const groupStage = {
+        $group: {
+          _id: {
+            year: { $year: '$date' },
+            month: { $month: '$date' },
+          },
+          totalRevenue: { $sum: { $multiply: ['$quantity', '$price'] } },
+        },
+      }
+
+      const sortStage =  {
+        $sort: {
+          '_id.year': 1,
+          '_id.month': 1,
+        }
+      }
+
+      let result = await SalseSchema.aggregate([
+        groupStage,
+        sortStage
+      ])
+
+        return {status: "success", data: result}
     }catch(e){
         return {status: "fail", msg: e}
     }
@@ -66,7 +133,31 @@ const RevnueByMonthService = async (req) => {
 
 const HighestQtySoldService = async (req) => {
     try{
-        return {status: "success", data: "HighestQtySoldService"}
+
+      const groupStage = {
+        $group: {
+          _id: {
+            date: '$date',
+            product: '$product',
+          },
+          totalQuantity: { $sum: '$quantity' },
+        }
+      }
+      const sortStage ={
+        $sort: {
+          totalQuantity: -1,
+        },
+      }
+      const limitStage ={
+        $limit: 1,
+      }
+
+      let result = await SalseSchema.aggregate([
+        groupStage,
+        sortStage,
+        limitStage
+      ])
+        return {status: "success", data: result}
     }catch(e){
         return {status: "fail", msg: e}
     }
@@ -74,7 +165,16 @@ const HighestQtySoldService = async (req) => {
 
 const DepartmentSalaryExpService = async (req) => {
     try{
-        return {status: "success", data: "DepartmentSalaryExpService"}
+      const groupStage = {
+        $group: {
+          _id: '$department',
+          totalSalaryExpense: { $sum: '$salary' },
+        }
+      }
+      let result = await SalseSchema.aggregate([
+        groupStage
+      ])
+        return {status: "success", data: result}
     }catch(e){
         return {status: "fail", msg: e}
     }
